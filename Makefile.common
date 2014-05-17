@@ -1,0 +1,23 @@
+CB_SDK:=XXX
+AS3COMPILER:=asc2.jar
+BASE_CFLAGS:=-Werror -Wno-write-strings -Wno-trigraphs
+
+$?UNAME=$(shell uname -s)
+ifneq (,$(findstring CYGWIN,$(UNAME)))
+	$?nativepath=$(shell cygpath -at mixed $(1))
+	$?unixpath=$(shell cygpath -at unix $(1))
+else
+	$?nativepath=$(abspath $(1))
+	$?unixpath=$(abspath $(1))
+endif
+
+ifneq (,$(findstring "asc2.jar","$(AS3COMPILER)"))
+	$?AS3COMPILERARGS=java $(JVMARGS) -jar $(call nativepath,$(CB_SDK)/usr/lib/$(AS3COMPILER)) -merge -md
+else
+	echo "ASC is no longer supported" ; exit 1 ;
+endif
+
+check:
+	@if [ -d $(CB_SDK)/usr/bin ] ; then true ; \
+	else echo "Couldn't locate CrossBridge sdk directory, please invoke make with \"make CB_SDK=/path/to/crossbridge/sdk ...\"" ; exit 1 ; \
+	fi

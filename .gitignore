@@ -1,0 +1,6 @@
+.DS_Store
+RECOVER_*.fla
+*_wrapper.c
+*.swf
+*.abc
+libtess2.as
