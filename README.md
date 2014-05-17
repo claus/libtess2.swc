@@ -23,13 +23,13 @@ A simple example:
 ```as3
 import com.codeazur.libtess2.Tesselator;
 
-var pathInner:Vector.<Number> = Vector.<Number>([0, 0,   200, 0,  200, 200, 0, 200]);
-var pathOuter:Vector.<Number> = Vector.<Number>([50, 50, 150, 50, 150, 150, 50, 150]);
+var pathOuter:Vector.<Number> = Vector.<Number>([0, 0,   200, 0,  200, 200, 0, 200]);
+var pathInner:Vector.<Number> = Vector.<Number>([50, 50, 150, 50, 150, 150, 50, 150]);
 
 var t:Tesselator = new Tesselator();
 t.newTess(1024 * 1024);
-t.addContour(pathInner, pathInner.length / 2, 2);
 t.addContour(pathOuter, pathOuter.length / 2, 2);
+t.addContour(pathInner, pathInner.length / 2, 2);
 t.tesselate(Tesselator.WINDING_ODD, Tesselator.ELEMENT_TYPE_POLYGONS, 3, 2);
 var vertices:Vector.<Number> = t.getVertices();
 var vertexCount:int = t.getVertexCount();
