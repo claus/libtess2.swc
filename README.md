@@ -38,6 +38,8 @@ var elementCount:int = t.getElementCount();
 t.deleteTess();
 ```
 
+![image](examples/test.png)
+
 ## API
 
 The ActionScript API is kept close to the original C API.
