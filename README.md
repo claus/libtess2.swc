@@ -1,4 +1,4 @@
-# as3libtess2
+# libtess2.swc
 
 This is the tesselation library [libtess2](https://github.com/memononen/libtess2), compiled to ActionScript 3 via Adobe CrossBridge.
 
@@ -113,6 +113,6 @@ Returns a ```Vector.<int>``` containig the element indices.
 
 ## Build
 
-In order to build as3libtess2 from source, you need to have [Adobe CrossBridge](http://adobe-flash.github.io/crossbridge/) installed.
+In order to build libtess2.swc from source, you need to have [Adobe CrossBridge](http://adobe-flash.github.io/crossbridge/) installed.
 
 Then call ```make CB_SDK=/path/to/crossbridge/sdk```.
