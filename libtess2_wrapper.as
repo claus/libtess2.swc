@@ -15,8 +15,9 @@ package com.codeazur.libtess2
     public static const ELEMENT_TYPE_BOUNDARY_CONTOURS:int = 2;
 
     private var _t:int = 0;
-    private var _polySize:int = 0;
-    private var _vertexSize:int = 0;
+    private var _type:int;
+    private var _polySize:int;
+    private var _vertexSize:int;
 
     public function Tesselator() {
       CModule.startAsync(this);
@@ -46,10 +47,10 @@ package com.codeazur.libtess2
     }
 
     public function tesselate(windingRule:int, elementType:int, polySize:int = 3, vertexSize:int = 2):int {
-      vertexSize = Math.min(Math.max(vertexSize, 3), 2);
-      _polySize = polySize;
-      _vertexSize = vertexSize;
-      return libtess2.tesselate(_t, windingRule, elementType, polySize, vertexSize);
+      _type = elementType;
+      _polySize = (elementType == ELEMENT_TYPE_BOUNDARY_CONTOURS) ? 2 : polySize;
+      _vertexSize = Math.min(Math.max(vertexSize, 3), 2);;
+      return libtess2.tesselate(_t, windingRule, _type, _polySize, _vertexSize);
     }
 
     public function getVertexCount():int {
