@@ -14,65 +14,73 @@ package com.codeazur.libtess2
     public static const ELEMENT_TYPE_CONNECTED_POLYGONS:int = 1;
     public static const ELEMENT_TYPE_BOUNDARY_CONTOURS:int = 2;
 
-    private var t:int = 0;
+    private var _t:int = 0;
+    private var _polySize:int = 0;
+    private var _vertexSize:int = 0;
 
     public function Tesselator() {
       CModule.startAsync(this);
     }
 
     public function newTess(memorySize:int):void {
-      if (t !== 0) { deleteTess(); }
-      t = libtess2.newTess(1024 * 1024);
+      if (_t !== 0) { deleteTess(); }
+      _t = libtess2.newTess(memorySize);
     }
 
     public function deleteTess():void {
-      libtess2.deleteTess(t);
+      libtess2.deleteTess(_t);
+      _t = 0;
     }
 
-    public function addContour(vertices:Vector.<Number>, count:uint, vertexSize:uint = 2):void {
-      var vertexCount:int = vertices.length;
-      var vertexPtr:int = CModule.malloc(4 * vertexCount);
-      for (var i:int = 0, p:int = vertexPtr; i < vertexCount; i++) {
+    public function addContour(vertices:Vector.<Number>, vertexCount:int = -1, vertexSize:int = 2):void {
+      vertexSize = Math.min(Math.max(vertexSize, 3), 2);
+      vertexCount = (vertexCount < 0) ? vertices.length / vertexSize : Math.min(vertexCount, vertices.length / vertexSize);
+      var len:int = vertexCount * vertexSize;
+      var ptr:int = CModule.malloc(4 * len);
+      for (var i:int = 0, p:int = ptr; i < len; i++) {
         CModule.writeFloat(p, vertices[i]);
         p += 4;
       }
-      libtess2.addContour(t, vertexSize, vertexPtr, 4 * vertexSize, count);
-      CModule.free(vertexPtr);
+      libtess2.addContour(_t, vertexSize, ptr, 4 * vertexSize, vertexCount);
+      CModule.free(ptr);
     }
 
     public function tesselate(windingRule:int, elementType:int, polySize:int = 3, vertexSize:int = 2):int {
-      return libtess2.tesselate(t, windingRule, elementType, polySize, vertexSize);
+      vertexSize = Math.min(Math.max(vertexSize, 3), 2);
+      _polySize = polySize;
+      _vertexSize = vertexSize;
+      return libtess2.tesselate(_t, windingRule, elementType, polySize, vertexSize);
     }
 
     public function getVertexCount():int {
-      return libtess2.getVertexCount(t);
+      return libtess2.getVertexCount(_t);
     }
 
     public function getVertices():Vector.<Number> {
-      var vertexCount:int = getVertexCount() * 2;
-      var vertexPtr:int = libtess2.getVertices(t);
-      var vertices:Vector.<Number> = new Vector.<Number>(vertexCount);
-      for (var i:int = 0, p:int = vertexPtr; i < vertexCount; i++) {
-        vertices[i] = CModule.readFloat(p);
-        p += 4;
+      var len:int = getVertexCount() * _vertexSize;
+      var ptr:int = libtess2.getVertices(_t);
+      var vertices:Vector.<Number> = new Vector.<Number>(len);
+      for (var i:int = 0; i < len; i++) {
+        vertices[i] = CModule.readFloat(ptr);
+        ptr += 4;
       }
       return vertices;
     }
 
     public function getVertexIndices():Vector.<int> {
-      var elementCount:int = getElementCount() * 3;
-      var elementPtr:int = libtess2.getElements(t);
-      return CModule.readIntVector(elementPtr, elementCount);
+      var len:int = getVertexCount();
+      var ptr:int = libtess2.getVertexIndices(_t);
+      return CModule.readIntVector(ptr, len);
     }
 
     public function getElementCount():int {
-      return libtess2.getElementCount(t);
+      return libtess2.getElementCount(_t);
     }
 
     public function getElements():Vector.<int> {
-      var elementCount:int = getElementCount() * 3;
-      var elementPtr:int = libtess2.getElements(t);
-      return CModule.readIntVector(elementPtr, elementCount);
+      var len:int = getElementCount() * _polySize;
+      var ptr:int = libtess2.getElements(_t);
+      return CModule.readIntVector(ptr, len);
     }
   }
 }
