@@ -67,7 +67,7 @@ Adds a contour (a closed subpath of the shape) to be tesselated.
 tesselate(windingRule, elementType, polySize, vertexSize)
 ```
 Tesselates the contours.
-* windingRule - The winding rule used for tesselation.
+* windingRule - The winding rule used for tesselation. See [http://www.glprogramming.com/red/chapter11.html](http://www.glprogramming.com/red/chapter11.html).
   * ```Tesselator.WINDING_ODD```
   * ```Tesselator.WINDING_NONZERO```
   * ```Tesselator.WINDING_POSITIVE```
@@ -110,6 +110,8 @@ Returns the number of elements in the tesselated output.
 getElements()
 ```
 Returns a ```Vector.<int>``` containig the element indices.
+
+For ```ELEMENT_TYPE_BOUNDARY_CONTOURS```, returns a tuple per element, where the first value is the start vertex index, and the second value is the number of vertices that make up the element (here: boundary polygon).
 
 ## Build
 
